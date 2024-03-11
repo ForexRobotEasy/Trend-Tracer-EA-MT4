@@ -1,0 +1,104 @@
+mql5
+//+------------------------------------------------------------------+
+//|                              Trend Tracer EA MT4                 |
+//|                             Developer: Forex Robot Easy Team     |
+//|                            Developer's Site: forexroboteasy.com  |
+//+------------------------------------------------------------------+
+
+// Global variables
+input int trendPeriod = 14;
+input double riskPercentage = 2.0;
+input double stopLossPercentage = 1.0;
+input double takeProfitPercentage = 2.0;
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Add initialization code here
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Add deinitialization code here
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    // Add trading logic here
+    double currentPrice = MarketInfo(Symbol(), MODE_BID);
+    
+    // Check if market is in an uptrend
+    if (IsUptrend())
+    {
+        double stopLoss = currentPrice - (currentPrice * stopLossPercentage / 100);
+        double takeProfit = currentPrice + (currentPrice * takeProfitPercentage / 100);
+        
+        // Open a buy order
+        if (OrderSend(Symbol(), OP_BUY, 0.01, currentPrice, 0, stopLoss, takeProfit, 'Trend Tracer EA'))
+        {
+            // Order placed successfully
+        }
+        else
+        {
+            // Order placement failed
+        }
+    }
+    
+    // Check if market is in a downtrend
+    if (IsDowntrend())
+    {
+        double stopLoss = currentPrice + (currentPrice * stopLossPercentage / 100);
+        double takeProfit = currentPrice - (currentPrice * takeProfitPercentage / 100);
+        
+        // Open a sell order
+        if (OrderSend(Symbol(), OP_SELL, 0.01, currentPrice, 0, stopLoss, takeProfit, 'Trend Tracer EA'))
+        {
+            // Order placed successfully
+        }
+        else
+        {
+            // Order placement failed
+        }
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Function to check if market is in an uptrend                      |
+//+------------------------------------------------------------------+
+bool IsUptrend()
+{
+    double previousPrice = iClose(Symbol(), 0, 1);
+    double currentPrice = iClose(Symbol(), 0, 0);
+    
+    if (currentPrice > previousPrice)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+//+------------------------------------------------------------------+
+//| Function to check if market is in a downtrend                     |
+//+------------------------------------------------------------------+
+bool IsDowntrend()
+{
+    double previousPrice = iClose(Symbol(), 0, 1);
+    double currentPrice = iClose(Symbol(), 0, 0);
+    
+    if (currentPrice < previousPrice)
+    {
+        return true;
+    }
+    
+    return false;
+}
